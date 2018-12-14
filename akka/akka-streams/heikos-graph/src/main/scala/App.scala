@@ -27,6 +27,10 @@ import akka.stream.scaladsl._
   */
 object App {
 
+  // Some handy aliases
+  type BusinessLogicFlow = Flow[String, Int, Any]
+  type Log = Sink[(String, Int), Future[Done]]
+
   // The graph implementation of the ascii art.
   def withProcessingLog
     (enrich: String => String)
@@ -69,9 +73,6 @@ object App {
   }
 
   val someFlow: BusinessLogicFlow = Flow[String].map { _.length }
-
-  type BusinessLogicFlow = Flow[String, Int, Any]
-  type Log = Sink[(String, Int), Future[Done]]
 
   val processingLog: Log = {
     Sink.foreach {
