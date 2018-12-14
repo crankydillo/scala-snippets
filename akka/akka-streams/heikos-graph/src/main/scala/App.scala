@@ -30,8 +30,8 @@ object App {
   // The graph implementation of the ascii art.
   def withProcessingLog
     (enrich: String => String)
-    (businessLogic: NormalFlow  // heiko's 'handler'
-  ): NormalFlow = {
+    (businessLogic: BusinessLogicFlow  // heiko's 'handler'
+  ): BusinessLogicFlow = {
     Flow.fromGraph(GraphDSL.create(processingLog) { implicit builder => processingLog =>
       import GraphDSL.Implicits._
 
@@ -58,7 +58,7 @@ object App {
 
     val strings = Source(List("ab", "cdef"))
 
-    def process(businessLogic: NormalFlow) =
+    def process(businessLogic: BusinessLogicFlow) =
       strings.via(businessLogic).runForeach(println)
 
     val done1 = process(someFlow)
@@ -68,16 +68,14 @@ object App {
     done1.zip(done2).onComplete(_ => system.terminate())
   }
 
-  val someFlow: NormalFlow = Flow[String].map { _.length }
+  val someFlow: BusinessLogicFlow = Flow[String].map { _.length }
 
-  type NormalFlow = Flow[String, Int, Any]
+  type BusinessLogicFlow = Flow[String, Int, Any]
   type Log = Sink[(String, Int), Future[Done]]
-
 
   val processingLog: Log = {
     Sink.foreach {
       case (in, out) => println(s"$in = $out")
     }
   }
-
 }
